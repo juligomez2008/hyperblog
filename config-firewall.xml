@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pfsense>
-	<version>17.3</version>
+	<version>18.8</version>
 	<lastchange></lastchange>
 	<system>
 		<optimization>normal</optimization>
@@ -131,6 +131,12 @@
 		<dnsallowoverride></dnsallowoverride>
 		<dns1gw>none</dns1gw>
 		<dns2gw>none</dns2gw>
+		<gitsync>
+			<repositoryurl></repositoryurl>
+			<branch></branch>
+		</gitsync>
+		<pkg_repo_conf_path>/usr/local/share/pfSense/pkg/repos/pfSense-repo.conf</pkg_repo_conf_path>
+		<maximumtableentries>400000</maximumtableentries>
 	</system>
 	<interfaces>
 		<wan>
@@ -461,7 +467,7 @@
 			<month>*</month>
 			<wday>*</wday>
 			<who>root</who>
-			<command>/usr/bin/nice -n20 /usr/local/sbin/expiretable -v -t 3600 sshlockout</command>
+			<command>/usr/bin/nice -n20 /usr/local/sbin/expiretable -v -t 3600 sshguard</command>
 		</item>
 		<item>
 			<minute>*/60</minute>
@@ -536,7 +542,7 @@
 			<command>/usr/local/pkg/swapstate_check.php</command>
 		</item>
 		<item>
-			<minute>9</minute>
+			<minute>35</minute>
 			<hour>*/1</hour>
 			<mday>*</mday>
 			<month>*</month>
@@ -687,9 +693,9 @@
 	</unbound>
 	<dyndnses></dyndnses>
 	<revision>
-		<time>1537903645</time>
-		<description><![CDATA[admin@192.168.11.229: Configuration changed via the pfSense wizard subsystem.]]></description>
-		<username>admin@192.168.11.229</username>
+		<time>1543237485</time>
+		<description><![CDATA[(system): Installed cron job for /usr/local/bin/perl /usr/local/www/lightsquid/lightparser.pl yesterday]]></description>
+		<username>(system)</username>
 	</revision>
 	<cert>
 		<refid>3ccdd6186be43</refid>
@@ -755,8 +761,8 @@
 			<ipprotocol>inet</ipprotocol>
 			<interval></interval>
 			<descr><![CDATA[Interface wan Gateway]]></descr>
-			<defaultgw></defaultgw>
 		</gateway_item>
+		<defaultgw4>GW_WAN</defaultgw4>
 	</gateways>
 	<ppps></ppps>
 	<installedpackages>
@@ -1020,6 +1026,184 @@
 			</config>
 		</lightsquid>
 		<acme></acme>
+		<package>
+			<name>OpenVPN Client Export Utility</name>
+			<internal_name>openvpn-client-export</internal_name>
+			<descr><![CDATA[Allows a pre-configured OpenVPN Windows Client or Mac OS X's Viscosity configuration bundle to be exported directly from pfSense.]]></descr>
+			<version>1.4.18</version>
+			<configurationfile>openvpn-client-export.xml</configurationfile>
+			<tabs>
+				<tab>
+					<name>Client Export</name>
+					<tabgroup>OpenVPN</tabgroup>
+					<url>/vpn_openvpn_export.php</url>
+				</tab>
+				<tab>
+					<name>Shared Key Export</name>
+					<tabgroup>OpenVPN</tabgroup>
+					<url>/vpn_openvpn_export_shared.php</url>
+				</tab>
+			</tabs>
+			<include_file>/usr/local/pkg/openvpn-client-export.inc</include_file>
+		</package>
+		<package>
+			<name>squid3</name>
+			<internal_name>squid</internal_name>
+			<descr><![CDATA[High performance web proxy cache (3.4 branch). It combines Squid as a proxy server with its capabilities of acting as a HTTP / HTTPS reverse proxy.&lt;br /&gt;
+			It includes an Exchange-Web-Access (OWA) Assistant, SSL filtering and antivirus integration via C-ICAP.]]></descr>
+			<pkginfolink>https://forum.pfsense.org/index.php?board=60.0</pkginfolink>
+			<website>http://www.squid-cache.org/</website>
+			<version>0.4.44_7</version>
+			<configurationfile>squid.xml</configurationfile>
+			<filter_rule_function>squid_generate_rules</filter_rule_function>
+			<tabs>
+				<tab>
+					<text><![CDATA[General]]></text>
+					<url>/pkg_edit.php?xml=squid.xml&amp;id=0</url>
+					<active></active>
+				</tab>
+				<tab>
+					<text><![CDATA[Remote Cache]]></text>
+					<url>/pkg.php?xml=squid_upstream.xml</url>
+				</tab>
+				<tab>
+					<text><![CDATA[Local Cache]]></text>
+					<url>/pkg_edit.php?xml=squid_cache.xml&amp;id=0</url>
+				</tab>
+				<tab>
+					<text><![CDATA[Antivirus]]></text>
+					<url>/pkg_edit.php?xml=squid_antivirus.xml&amp;id=0</url>
+				</tab>
+				<tab>
+					<text><![CDATA[ACLs]]></text>
+					<url>/pkg_edit.php?xml=squid_nac.xml&amp;id=0</url>
+				</tab>
+				<tab>
+					<text><![CDATA[Traffic Mgmt]]></text>
+					<url>/pkg_edit.php?xml=squid_traffic.xml&amp;id=0</url>
+				</tab>
+				<tab>
+					<text><![CDATA[Authentication]]></text>
+					<url>/pkg_edit.php?xml=squid_auth.xml&amp;id=0</url>
+				</tab>
+				<tab>
+					<text><![CDATA[Users]]></text>
+					<url>/pkg.php?xml=squid_users.xml</url>
+				</tab>
+				<tab>
+					<text><![CDATA[Real Time]]></text>
+					<url>/squid_monitor.php</url>
+				</tab>
+				<tab>
+					<text><![CDATA[Sync]]></text>
+					<url>/pkg_edit.php?xml=squid_sync.xml</url>
+				</tab>
+			</tabs>
+			<include_file>/usr/local/pkg/squid.inc</include_file>
+		</package>
+		<package>
+			<name>squidGuard</name>
+			<descr><![CDATA[High performance web proxy URL filter.
+			&lt;br /&gt;
+			Works with both Squid (2.7 legacy branch) and Squid3 (3.4 branch) packages.
+			&lt;br /&gt;
+			&lt;strong&gt;Ensure Squid is installed before installing this package.&lt;/strong&gt;]]></descr>
+			<website>http://www.squidGuard.org/</website>
+			<version>1.16.18_1</version>
+			<configurationfile>squidguard.xml</configurationfile>
+			<after_install_info>Please visit Services - SquidGuard Proxy Filter - Target Categories and set up at least one category there before enabling SquidGuard. See https://forum.pfsense.org/index.php?topic=94312.0 for details.</after_install_info>
+			<tabs>
+				<tab>
+					<text><![CDATA[General settings]]></text>
+					<url>/pkg_edit.php?xml=squidguard.xml&amp;id=0</url>
+					<active></active>
+				</tab>
+				<tab>
+					<text><![CDATA[Common ACL]]></text>
+					<url>/pkg_edit.php?xml=squidguard_default.xml&amp;id=0</url>
+				</tab>
+				<tab>
+					<text><![CDATA[Groups ACL]]></text>
+					<url>/pkg.php?xml=squidguard_acl.xml</url>
+				</tab>
+				<tab>
+					<text><![CDATA[Target categories]]></text>
+					<url>/pkg.php?xml=squidguard_dest.xml</url>
+				</tab>
+				<tab>
+					<text><![CDATA[Times]]></text>
+					<url>/pkg.php?xml=squidguard_time.xml</url>
+				</tab>
+				<tab>
+					<text><![CDATA[Rewrites]]></text>
+					<url>/pkg.php?xml=squidguard_rewr.xml</url>
+				</tab>
+				<tab>
+					<text><![CDATA[Blacklist]]></text>
+					<url>/squidGuard/squidguard_blacklist.php</url>
+				</tab>
+				<tab>
+					<text><![CDATA[Log]]></text>
+					<url>/squidGuard/squidguard_log.php</url>
+				</tab>
+				<tab>
+					<text><![CDATA[XMLRPC Sync]]></text>
+					<url>/pkg_edit.php?xml=squidguard_sync.xml</url>
+				</tab>
+			</tabs>
+			<include_file>/usr/local/pkg/squidguard.inc</include_file>
+		</package>
+		<package>
+			<name>ntopng</name>
+			<website>http://www.ntop.org/</website>
+			<descr><![CDATA[ntopng (replaces ntop) is a network probe that shows network usage in a way similar to what top does for processes. In interactive mode, it displays the network status on the user's terminal. In Web mode it acts as a Web server, creating an HTML dump of the network status. It sports a NetFlow/sFlow emitter/collector, an HTTP-based client interface for creating ntop-centric monitoring applications, and RRD for persistently storing traffic statistics.]]></descr>
+			<version>0.8.13_3</version>
+			<configurationfile>ntopng.xml</configurationfile>
+			<noembedded>true</noembedded>
+			<tabs>
+				<tab>
+					<text><![CDATA[ntopng Settings]]></text>
+					<url>/pkg_edit.php?xml=ntopng.xml</url>
+					<active></active>
+				</tab>
+				<tab>
+					<text><![CDATA[Access ntopng]]></text>
+					<url>/ntopng_redirect.php</url>
+				</tab>
+			</tabs>
+			<include_file>/usr/local/pkg/ntopng.inc</include_file>
+		</package>
+		<package>
+			<name>Lightsquid</name>
+			<descr><![CDATA[LightSquid is a high performance web proxy reporting tool. Includes proxy realtime statistics (SQStat).
+			&lt;strong&gt;Requires Squid package.&lt;/strong&gt;]]></descr>
+			<website>http://lightsquid.sf.net/</website>
+			<version>3.0.6_4</version>
+			<configurationfile>lightsquid.xml</configurationfile>
+			<noembedded>true</noembedded>
+			<include_file>/usr/local/pkg/lightsquid.inc</include_file>
+		</package>
+		<package>
+			<name>bandwidthd</name>
+			<website>http://bandwidthd.sourceforge.net/</website>
+			<descr><![CDATA[BandwidthD tracks usage of TCP/IP network subnets and builds html files with graphs to display utilization.&lt;br/&gt;
+			Charts are built by individual IPs, and by default display utilization over 2 day, 8 day, 40 day, and 400 day periods. Furthermore, each IP address's utilization can be logged out in CDF format, or to a backend database server.&lt;br/&gt;
+			HTTP, TCP, UDP, ICMP, VPN, and P2P traffic are color coded.]]></descr>
+			<version>0.7.4_1</version>
+			<configurationfile>bandwidthd.xml</configurationfile>
+			<tabs>
+				<tab>
+					<text><![CDATA[Access BandwidthD]]></text>
+					<url>/diag_bandwidthd.php</url>
+				</tab>
+				<tab>
+					<text><![CDATA[Settings]]></text>
+					<url>/pkg_edit.php?xml=bandwidthd.xml</url>
+					<active></active>
+				</tab>
+			</tabs>
+			<include_file>/usr/local/pkg/bandwidthd.inc</include_file>
+		</package>
 	</installedpackages>
 	<ca>
 		<refid>5aa1ed0dc9bdb</refid>
@@ -1071,4 +1255,7 @@
 			<ovpnallow>on</ovpnallow>
 		</step11>
 	</ovpnserver>
+	<ntpd></ntpd>
+	<dhcrelay></dhcrelay>
+	<dhcrelay6></dhcrelay6>
 </pfsense>
